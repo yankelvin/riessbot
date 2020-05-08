@@ -1,0 +1,25 @@
+empregado(patinhas).
+empregado(huguinho).
+empregado(zezinho).
+empregado(luisinho).
+
+setor(cto).
+setor(master).
+setor(dev).
+
+hierarquia(cto, master).
+hierarquia(master, dev).
+
+empregado_setor(patinhas, master).
+empregado_setor(huguinho, dev).
+empregado_setor(zezinho, dev).
+empregado_setor(luisinho, dev).
+
+subordinado(X, Y) :- 
+    empregado_setor(X, X1),
+    empregado_setor(Y, Y1),
+    hierarquia(Y1, X1).
+
+salario(X, 2000) :-
+    empregado_setor(X, X1),
+    X1 = dev.
