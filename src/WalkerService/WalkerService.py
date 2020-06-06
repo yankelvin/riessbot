@@ -2,7 +2,7 @@ import random
 from .walker_map import map_maze
 
 
-class Walker:
+class WalkerService:
     def __init__(self):
         self.map_maze = map_maze
 

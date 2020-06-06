@@ -1,11 +1,11 @@
-from src.walker.walker import Walker
-from src.store.store import Store
+from src.WalkerService.WalkerService import WalkerService
+from src.StoreService.StoreService import StoreService
 
 
 class Program:
     def __init__(self):
-        self.walker = Walker()
-        self.store = Store()
+        self.walker = WalkerService()
+        self.store = StoreService()
 
     def GetBestWay(self, origin, destiny):
         result = self.walker.Generate_Way(origin, destiny, _type=1)

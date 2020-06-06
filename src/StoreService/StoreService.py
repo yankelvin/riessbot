@@ -11,7 +11,7 @@ class Product:
         return f"Name: {self.name}, Weight: {self.weight}, Value: {self.value}"
 
 
-class Store:
+class StoreService:
     def __init__(self):
         self.truck = {
             "products": []
