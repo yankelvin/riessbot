@@ -24,11 +24,16 @@ class DialogFlowService:
             self.url, data=json.dumps(body), headers=self.headers)
 
         data = json.loads(response.text)
+
+        # pprint(data)
+
         bot_response = data["result"]["fulfillment"]["speech"]
+        movie = ""
 
-        pprint(data)
+        if (len(data["result"]["parameters"].keys()) > 1):
+            movie = data["result"]["parameters"]["filme"]
 
-        return bot_response
+        return {"bot_response": bot_response, "movie": movie}
 
 
 # dfService = DialogFlowService()
