@@ -2,7 +2,6 @@ import nltk
 import pickle
 import string
 
-from imdb import IMDb
 from string import punctuation
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -26,29 +25,57 @@ def LemNormalize(text):
     return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
 
 
+tfidf_vectorizer = TfidfVectorizer(
+    tokenizer=LemNormalize, stop_words='english')
+
+
 class RecommenderService:
     def __init__(self):
-        self.ia = IMDb()
-        self.clusters = dict()
-        self.Fit()
+        self.kmeans = None
+        self.animes = []
+        self.__Fit()
 
-    def Fit(self):
-        top = self.ia.get_top250_movies()
+    def __Fit(self):
+        print("Carregando animes...")
+        self.animes = pickle.load(
+            open('./src/RecommenderService/data-animes.pkl', 'rb'))
 
-        data = pickle.load(
-            open('./src/RecommenderService/training_data.pkl', 'rb'))
-        tfidf_vectorizer = TfidfVectorizer(
-            tokenizer=LemNormalize, stop_words='english')
-        tfidf = tfidf_vectorizer.fit_transform(data)
+        print(f"{len(self.animes)} carregados!")
 
-        kmeans = KMeans(n_clusters=25).fit(tfidf)
+        synopsis = list()
+        for anime in self.animes:
+            synopsis.append(anime["synopsis"])
 
-        for k, movie in enumerate(top):
-            self.clusters[movie['title']] = kmeans.labels_[k]
+        print("Iniciando o treino!")
+        tfidf = tfidf_vectorizer.fit_transform(synopsis)
 
-    def GetRecommendation(self, movie):
-        search = self.ia.search_movie(movie)
-        # filme = search[indice]
-        # id = filme.getID()
-        # filme = self.ia.get_movie(id)
-        print(search)
+        self.kmeans = KMeans(n_clusters=100).fit(tfidf)
+        print("Treino finalizado.")
+
+        print("Ajustando grupos.")
+        for k, v in enumerate(self.kmeans.labels_):
+            self.animes[k]['cluster'] = v
+
+        print("Tudo pronto chefe!\n")
+
+    def GetRecommendation(self, query):
+        index = self.kmeans.predict(tfidf_vectorizer.transform([query]))
+        recommendations = []
+
+        print("")
+        # for k, anime in enumerate(self.animes):
+        #     if anime['cluster'] == index[0]:
+        #         print(f"Anime: {anime['name']} - Cluster: {anime['cluster']}")
+        #         recommendations.append(anime)
+
+        print(self.kmeans.score(tfidf_vectorizer.transform([query])))
+
+        return recommendations
+
+    def GetAnimes(self):
+        return self.animes
+
+
+recommender = RecommenderService()
+recommender.GetRecommendation(
+    "Moments prior to Naruto Uzumaki's birth, a huge demon known as the Kyuubi, the Nine-Tailed Fox, attacked Konohagakure, the Hidden Leaf Village, and wreaked havoc.")

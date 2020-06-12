@@ -28,12 +28,12 @@ class DialogFlowService:
         # pprint(data)
 
         bot_response = data["result"]["fulfillment"]["speech"]
-        movie = ""
+        anime = ""
 
         if (len(data["result"]["parameters"].keys()) > 1):
-            movie = data["result"]["parameters"]["filme"]
+            anime = data["result"]["parameters"]["anime"]
 
-        return {"bot_response": bot_response, "movie": movie}
+        return {"bot_response": bot_response, "anime": anime}
 
 
 # dfService = DialogFlowService()
