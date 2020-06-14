@@ -28,5 +28,7 @@ Para o telegram não foi necessário fazer nada demais, meu código funciona com
 ### Sistema de Recomendação:
 O sistema de recomendação não fiz no modelo colaborativo, como eu não tinha os dados de usuários, apenas o nome, rank e sinopse, fiz baseado na sinopse, faço as tratativas e utilizo clusterização para separar os animes de acordo com as suas sinopses, com isso percebi que animes do mesmo gênero geralmente tem sinopses parecidas, mesmo que o enredo seja diferente.
 
+Todos os dados que coletei foram em inglês, portanto as sinopses eu só tinha em inglês, então para informar o usuário to usando a biblioteca do google translate para python para traduzir as sinopses antes de enviar ao usuário.
+
 ### Jogo da forca (Hangman Game):
 A principio iria utilizar o algoritmo genético para "melhorar" os parâmetros da clusterização, mas validando os score, percebi que as melhorias não foram muito efetivas. Então pensei em utilizar ele como um jogo de forca, onde o usuário informa um anime e o bot utiliza o algoritmo genético para ir de uma palavra totalmente aleatória até chegar no nome do anime informado.
