@@ -3,6 +3,7 @@ from googletrans import Translator
 from random import shuffle
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
+from src.HangmanGame.HangmanGame import HangmanGame
 from src.DialogFlowService.DialogFlowService import DialogFlowService
 from src.RecommenderService.RecommenderService import RecommenderService
 
@@ -21,8 +22,11 @@ animes = recommender.GetAnimes()
 
 
 def start(update, context):
-    message = "Olá, quero te ajudar a passar o tempo melhor nessa quarentena, portanto vou te recomendar vários animes para que você possa assistir :)"
-    message += "\nPara começarmos me diga qual seu anime preferido :P"
+    message = "Olá, eu sou a Ries e eu fui programada com 2 funcionalidades :P"
+    message += "\n - Posso te recomendar animes, basta me dizer o nome de um dos seus preferidos,"
+    message += " minhas recomendações são baseadas no top 1200 animes do MyAnimeList."
+    message += "\n - Podemos jogar o jogo da forca, onde você me diz um nome de um anime e eu utilizo um algoritmo genético para chegar a esse nome"
+    message += "\n - Para jogar o jogo da forca basta digitar: Jogo {Nome do Anime} | Forca {Nome do Anime}"
 
     context.bot.send_message(chat_id=update.message.chat_id, text=message)
 
@@ -35,8 +39,29 @@ def echo(update, context):
 
     message = response["bot_response"]
     anime = response["anime"]
+    intent = response["intent"]
 
-    if (anime != ""):
+    if intent == "Forca" and anime != "":
+        game = HangmanGame.Start(anime)
+        generations = game["generations"]
+
+        start = 0
+        if len(generations) > 5:
+            start = 5
+        else:
+            start = len(generations)
+
+        for i in range(len(generations) - start, len(generations), 1):
+            message = f"Generation: {generations[i]['generation']}\tString: {generations[i]['string']}\tFitness: {generations[i]['fitness']}"
+            context.bot.send_message(
+                chat_id=update.message.chat_id, text=message)
+
+        message = f"Após {game['generation']} gerações consegui chegar ao nome do anime, ufa!"
+        message += f"\nEsse é o seu anime: {anime}"
+
+        context.bot.send_message(
+            chat_id=update.message.chat_id, text=message)
+    elif (anime != ""):
         synopsis = ""
         for _anime in animes:
             if anime in _anime["name"]:

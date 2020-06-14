@@ -19,10 +19,12 @@ def LemTokens(tokens):
 
 
 remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
+remove_stop_words = dict((word, None)
+                         for word in stopwords.words('english'))
 
 
 def LemNormalize(text):
-    return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
+    return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict).translate(remove_stop_words)))
 
 
 tfidf_vectorizer = TfidfVectorizer(
@@ -44,12 +46,13 @@ class RecommenderService:
 
         synopsis = list()
         for anime in self.animes:
-            synopsis.append(anime["synopsis"])
+            synopsis.append(anime["synopsis"].replace(
+                "ha", "").replace("le", "").replace("wa", ""))
 
         print("Iniciando o treino!")
         tfidf = tfidf_vectorizer.fit_transform(synopsis)
 
-        self.kmeans = KMeans(n_clusters=100).fit(tfidf)
+        self.kmeans = KMeans(n_clusters=250).fit(tfidf)
         print("Treino finalizado.")
 
         print("Ajustando grupos.")
@@ -63,12 +66,12 @@ class RecommenderService:
         recommendations = []
 
         print("")
-        # for k, anime in enumerate(self.animes):
-        #     if anime['cluster'] == index[0]:
-        #         print(f"Anime: {anime['name']} - Cluster: {anime['cluster']}")
-        #         recommendations.append(anime)
+        for k, anime in enumerate(self.animes):
+            if anime['cluster'] == index[0]:
+                # print(f"Anime: {anime['name']} - Cluster: {anime['cluster']}")
+                recommendations.append(anime)
 
-        print(self.kmeans.score(tfidf_vectorizer.transform([query])))
+        # print(self.kmeans.score(tfidf_vectorizer.transform([query])))
 
         return recommendations
 
@@ -76,6 +79,6 @@ class RecommenderService:
         return self.animes
 
 
-recommender = RecommenderService()
-recommender.GetRecommendation(
-    "Moments prior to Naruto Uzumaki's birth, a huge demon known as the Kyuubi, the Nine-Tailed Fox, attacked Konohagakure, the Hidden Leaf Village, and wreaked havoc.")
+# recommender = RecommenderService()
+# recommender.GetRecommendation(
+#     "Moments prior to Naruto Uzumaki's birth, a huge demon known as the Kyuubi, the Nine-Tailed Fox, attacked Konohagakure, the Hidden Leaf Village, and wreaked havoc.")

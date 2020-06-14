@@ -8,7 +8,7 @@ class DialogFlowService:
         self.url = "https://api.dialogflow.com/v1/query?v=20150910"
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer YOUR TOKEN"
+            "Authorization": "Bearer 75dc90c445bd44e69928204b65284c62"
         }
 
     def SendIntent(self, message):
@@ -28,13 +28,14 @@ class DialogFlowService:
         # pprint(data)
 
         bot_response = data["result"]["fulfillment"]["speech"]
+        intent = data["result"]["metadata"]["intentName"]
         anime = ""
 
-        if (len(data["result"]["parameters"].keys()) > 1):
+        if (len(data["result"]["parameters"].keys()) > 1) or intent == "Forca":
             anime = data["result"]["parameters"]["anime"]
 
-        return {"bot_response": bot_response, "anime": anime}
+        return {"bot_response": bot_response, "anime": anime, "intent": intent}
 
 
 # dfService = DialogFlowService()
-# response = dfService.SendIntent("eae")
+# response = dfService.SendIntent("jogo naruto")
